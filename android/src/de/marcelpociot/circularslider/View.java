@@ -13,6 +13,7 @@ import java.util.HashMap;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.common.Log;
+import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
@@ -23,7 +24,7 @@ public class View extends TiUIView {
 	// Standard Debugging variables
 	private static final String LCAT = "TiCircularSliderModule";
 
-	private static final String PROPERTY_VALUE = "value";
+	public static final String PROPERTY_VALUE = "value";
 	private static final String PROPERTY_MIN_VALUE = "minimumValue";
 	private static final String PROPERTY_MAX_VALUE = "maximumValue";
 	private static final String PROPERTY_LINE_WIDTH = "lineWidth";
@@ -98,31 +99,22 @@ public class View extends TiUIView {
 					.getString(PROPERTY_COLOR_UNFILLED)));
 		}
 
-		Log.d(LCAT, "[VIEW LIFECYCLE EVENT] processProperties " + props);
-
 	}
 
 	@Override
 	public void propertyChanged(String key, Object oldValue, Object newValue,
 			KrollProxy proxy) {
-		// This method is called whenever a proxy property value is updated.
-		// Note that this
-		// method is only called if the new value is different than the current
-		// value.
-
-		super.propertyChanged(key, oldValue, newValue, proxy);
-
-		Log.d(LCAT, "[VIEW LIFECYCLE EVENT] propertyChanged: " + key + ' '
-				+ oldValue + ' ' + newValue);
+				
+			CircularSeekBar csb = (CircularSeekBar) getNativeView();
+				
+			if (key.equals(PROPERTY_VALUE)) {
+				csb.setProgress(TiConvert.toInt(newValue));
+			}else{
+				super.propertyChanged(key, oldValue, newValue, proxy);
+			}
 	}
 
 	private void notifyOfChange(int newValue) {
-		// The event listeners for a view are actually attached to the view
-		// proxy.
-		// You must reference 'proxy' to get the proxy for this view.
-
-		Log.d(LCAT, "[VIEW LIFECYCLE EVENT] notifyOfValueChange");
-
 		if (proxy.hasListeners("change")) {
 			HashMap<String, Integer> hm = new HashMap<String, Integer>();
 			hm.put("value", newValue);
