@@ -31,7 +31,7 @@ public class View extends TiUIView {
 	private static final String PROPERTY_COLOR_FILLED = "filledColor";
 	private static final String PROPERTY_COLOR_UNFILLED = "unfilledColor";
 
-	public View(TiViewProxy proxy) {
+	public View(final TiViewProxy proxy) {
 		super(proxy);
 
 		Log.d(LCAT, "[VIEW LIFECYCLE EVENT] view");
@@ -45,6 +45,7 @@ public class View extends TiUIView {
 				Log.d(LCAT,
 						"Progress:" + view.getProgress() + "/"
 								+ view.getMaxProgress());
+				proxy.setProperty(PROPERTY_VALUE, newProgress);
 				notifyOfChange(view.getProgress());
 			}
 		});
