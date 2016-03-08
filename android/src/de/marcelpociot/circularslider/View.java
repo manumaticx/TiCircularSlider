@@ -25,12 +25,14 @@ public class View extends TiUIView {
 	private static final String LCAT = "TiCircularSliderModule";
 
 	public static final String PROPERTY_VALUE = "value";
-	private static final String PROPERTY_MIN_VALUE = "minimumValue";
 	private static final String PROPERTY_MAX_VALUE = "maximumValue";
 	private static final String PROPERTY_LINE_WIDTH = "lineWidth";
 	private static final String PROPERTY_COLOR_FILLED = "filledColor";
 	private static final String PROPERTY_COLOR_UNFILLED = "unfilledColor";
-
+	private static final String PROPERTY_POINTER_COLOR = "pointerColor";
+	private static final String PROPERTY_POINTER_RADIUS = "pointerWidth";
+	private static final String PROPERTY_POINTER_HALO_COLOR = "pointerHaloColor";
+	
 	public View(TiViewProxy proxy) {
 		super(proxy);
 
@@ -75,16 +77,27 @@ public class View extends TiUIView {
 
 		if (props.containsKey(PROPERTY_LINE_WIDTH)) {
 			//csb.setBarWidth(TiConvert.toInt(props.get(PROPERTY_LINE_WIDTH)));
-//			hcsb.setBorderThickness(TiConvert.toInt(props.get(PROPERTY_LINE_WIDTH)));
+			hcsb.setBarWidth(TiConvert.toInt(props.get(PROPERTY_LINE_WIDTH)));
 		}
 
 		if (props.containsKey(PROPERTY_COLOR_FILLED)) {
-			//csb.setProgressColor(TiConvert.toColor(props.getString(PROPERTY_COLOR_FILLED)));
-//			hcsb.setBorderColor(TiConvert.toColor(props.getString(PROPERTY_COLOR_FILLED)));
+			hcsb.setWheelColor(TiConvert.toColor(props.getString(PROPERTY_COLOR_FILLED)));
 		}
 
 		if (props.containsKey(PROPERTY_COLOR_UNFILLED)) {
-			//csb.setRingBackgroundColor(TiConvert.toColor(props.getString(PROPERTY_COLOR_UNFILLED)));
+			hcsb.setUnactiveWheelColor(TiConvert.toColor(props.getString(PROPERTY_COLOR_UNFILLED)));
+		}
+		
+		if (props.containsKey(PROPERTY_POINTER_COLOR)) {
+			hcsb.setPointerColor(TiConvert.toColor(props.getString(PROPERTY_POINTER_COLOR)));
+		}
+		
+		if (props.containsKey(PROPERTY_POINTER_HALO_COLOR)) {
+			hcsb.setPointerHaloColor(TiConvert.toColor(props.getString(PROPERTY_POINTER_HALO_COLOR)));
+		}
+		
+		if (props.containsKey(PROPERTY_POINTER_RADIUS)) {
+			hcsb.setPointerRadius(TiConvert.toInt(props.get(PROPERTY_POINTER_RADIUS)));
 		}
 
 	}

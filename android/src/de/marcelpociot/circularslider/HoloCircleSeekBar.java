@@ -150,7 +150,7 @@ public class HoloCircleSeekBar extends View {
 	private RectF mColorCenterHaloRectangle = new RectF();
 	private int end_wheel;
 
-	private boolean show_text = true;
+	private boolean show_text = false;
 	private Rect bounds = new Rect();
 
 	public HoloCircleSeekBar(Context context) {
@@ -169,7 +169,7 @@ public class HoloCircleSeekBar extends View {
 	}
 
 	private void init(AttributeSet attrs, int defStyle) {
-		int[] res_a = new int[]{0};
+		int[] res_a = new int[]{0}; //TODO This should probably be different and we read from attrs.xml
 		
 		TypedArray a = getContext().obtainStyledAttributes(attrs, res_a, defStyle, 0);
 		initAttributes(a);
@@ -293,7 +293,7 @@ public class HoloCircleSeekBar extends View {
 		start_arc = a.getInteger(res_start_angle, START_ANGLE_DEF_VALUE);
 		end_wheel = a.getInteger(res_end_angle, END_WHEEL_DEFAULT_VALUE);
 
-		show_text = a.getBoolean(res_show_text, true);
+		show_text = a.getBoolean(res_show_text, false);
 
 		last_radians = end_wheel;
 
@@ -472,12 +472,43 @@ public class HoloCircleSeekBar extends View {
 		// return conversion;
 	}
 
-	public void setMax(int max)
-	{
+	//Setters and Getters
+	
+	public void setMax(int max) {
 		this.max = max;
 		setText(String.valueOf(calculateTextFromAngle(arc_finish_radians)));
 		updatePointerPosition();
 		invalidate();
+	}
+	
+	//TODO these use the PAINT objects which seems bad (i.e. mArcColor) but there should be a way to set the "wheel_color" var and reset the UI
+	public void setWheelColor(int color) {
+		mArcColor.setColor(color);
+//		wheel_color = color;  //TODO seems like we should be able to do this and update the UI instead of updating the mArcColor PAINT obj
+//		updatePointerPosition();
+//		invalidate();
+	}
+	
+	public void setUnactiveWheelColor(int color) {
+		mColorWheelPaint.setColor(color);
+	}
+	
+	public void setPointerHaloColor(int color){
+		mPointerHaloPaint.setColor(color);
+	}
+	
+	public void setPointerColor(int color){
+		mPointerColor.setColor(color);
+	}
+	
+	public void setPointerRadius(int w){
+		mPointerHaloPaint.setStrokeWidth(w);
+		mPointerColor.setStrokeWidth(w);
+	}
+	
+	public void setBarWidth(int w){
+		mArcColor.setStrokeWidth(w);
+		mColorWheelPaint.setStrokeWidth(w);
 	}
 
     public void setValue(float newValue) {
