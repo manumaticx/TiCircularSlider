@@ -6,64 +6,57 @@ import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.view.TiUIView;
+import org.appcelerator.titanium.util.TiConvert;
 
 import android.app.Activity;
+import android.os.Message;
 
-@Kroll.proxy(creatableInModule = TiCircularSliderModule.class)
+@Kroll.proxy(creatableInModule = TiCircularSliderModule.class,
+propertyAccessors = { "value" })
 public class ViewProxy extends TiViewProxy {
-	private static final String LCAT = "TiCircularSliderModule";
-
-	de.marcelpociot.circularslider.View view;
-
-	public ViewProxy() {
+	
+	private static final int MSG_FIRST_ID = KrollModule.MSG_LAST_ID + 1;
+	private static final int MSG_VALUE = MSG_FIRST_ID + 100;
+	
+	protected static final int MSG_LAST_ID = MSG_FIRST_ID + 999;
+	
+	public ViewProxy(){
 		super();
-
-		Log.d(LCAT, "[VIEWPROXY LIFECYCLE EVENT] init");
 	}
 
 	@Override
 	public TiUIView createView(Activity activity) {
-		// This method is called when the view needs to be created. This is
-		// a required method for a TiViewProxy subclass.
-
-		view = new View(this);
+		de.marcelpociot.circularslider.View view = new View(this);
 		view.getLayoutParams().autoFillsHeight = true;
 		view.getLayoutParams().autoFillsWidth = true;
 
 		return view;
 	}
-
-	// Handle creation options
+	
+	/**
+	 * message handler
+	 * @param message
+	 */
 	@Override
-	public void handleCreationDict(KrollDict options) {
-		// This method is called from handleCreationArgs if there is at least
-		// argument specified for the proxy creation call and the first argument
-		// is a KrollDict object.
-
-		Log.d(LCAT, "VIEWPROXY LIFECYCLE EVENT] handleCreationDict " + options);
-
-		// Calling the superclass method ensures that the properties specified
-		// in the dictionary are properly set on the proxy object.
-		super.handleCreationDict(options);
-	}
-
-	public void handleCreationArgs(KrollModule createdInModule, Object[] args) {
-		// This method is one of the initializers for the proxy class. The
-		// arguments
-		// for the create call are passed as an array of objects. If your proxy
-		// simply needs to handle a single KrollDict argument, use
-		// handleCreationDict.
-		// The superclass method calls the handleCreationDict if the first
-		// argument
-		// to the create method is a dictionary object.
-
-		Log.d(LCAT, "VIEWPROXY LIFECYCLE EVENT] handleCreationArgs ");
-
-		for (int i = 0; i < args.length; i++) {
-			Log.d(LCAT, "VIEWPROXY LIFECYCLE EVENT] args[" + i + "] " + args[i]);
+	public boolean handleMessage(Message msg) {
+		switch (msg.what) {
+			case MSG_VALUE: {
+				handleSetValue(msg.obj);
+				return true;
+			}
+			default: {
+				return super.handleMessage(msg);
+			}
 		}
-
-		super.handleCreationArgs(createdInModule, args);
 	}
-
+	
+	private void handleSetValue(Object value){
+		setProperty(de.marcelpociot.circularslider.View.PROPERTY_VALUE, value);
+	}
+	
+	@Kroll.setProperty @Kroll.method
+	public void setValue(Object value){
+		Message message = getMainHandler().obtainMessage(MSG_VALUE, value);
+		message.sendToTarget();
+	}
 }

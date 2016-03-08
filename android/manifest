@@ -2,17 +2,17 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0.1
+version: 1.2.0
 apiversion: 2
+architectures: armeabi armeabi-v7a x86 x86_64
 description: Circular slider with many customizations
 author: Manuel Lehner
 license: MIT
 copyright: 2014
 
-
 # these should not be edited
-name: TiCircularSlider
+name: android
 moduleid: de.marcelpociot.circularslider
 guid: 92ea5ecb-d462-433c-9967-90275ff0e99f
 platform: android
-minsdk: 3.2.0.GA
+minsdk: 5.1.1.GA
