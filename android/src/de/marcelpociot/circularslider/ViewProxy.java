@@ -32,31 +32,4 @@ public class ViewProxy extends TiViewProxy {
 
 		return view;
 	}
-	
-	/**
-	 * message handler
-	 * @param message
-	 */
-	@Override
-	public boolean handleMessage(Message msg) {
-		switch (msg.what) {
-			case MSG_VALUE: {
-				handleSetValue(msg.obj);
-				return true;
-			}
-			default: {
-				return super.handleMessage(msg);
-			}
-		}
-	}
-	
-	private void handleSetValue(Object value){
-		setProperty(de.marcelpociot.circularslider.View.PROPERTY_VALUE, value);
-	}
-	
-	@Kroll.setProperty @Kroll.method
-	public void setValue(Object value){
-		Message message = getMainHandler().obtainMessage(MSG_VALUE, value);
-		message.sendToTarget();
-	}
 }

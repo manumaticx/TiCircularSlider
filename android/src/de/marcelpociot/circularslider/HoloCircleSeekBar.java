@@ -138,10 +138,8 @@ public class HoloCircleSeekBar extends View {
 	private Paint mArcColor;
 	private int wheel_color, unactive_wheel_color, pointer_color, pointer_halo_color, text_size, text_color;
 	private int init_position = -1;
-	private boolean block_end = false;
 	private float lastX;
 	private int last_radians = 0;
-	private boolean block_start = false;
 
 	private int arc_finish_radians = 360;
 	private int start_arc = 270;
@@ -155,27 +153,11 @@ public class HoloCircleSeekBar extends View {
 
 	public HoloCircleSeekBar(Context context) {
 		super(context);
-		init(null, 0);
+		init();
 	}
 
-	public HoloCircleSeekBar(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init(attrs, 0);
-	}
-
-	public HoloCircleSeekBar(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		init(attrs, defStyle);
-	}
-
-	private void init(AttributeSet attrs, int defStyle) {
-		int[] res_a = new int[]{0}; //TODO This should probably be different and we read from attrs.xml
-		
-		TypedArray a = getContext().obtainStyledAttributes(attrs, res_a, defStyle, 0);
-		initAttributes(a);
-
-		a.recycle();
-		// mAngle = (float) (-Math.PI / 2);
+	private void init() {
+		initAttributes();
 
 		mColorWheelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mColorWheelPaint.setShader(s);
@@ -232,129 +214,29 @@ public class HoloCircleSeekBar extends View {
 		this.text = text;
 	}
 
-	private void initAttributes(TypedArray a) {
-       
-		int res_start_angle = 0;
-        int res_end_angle = 0;
-        int res_wheel_size = 0;
-        int res_wheel_active_color = 0;
-        int res_wheel_unactive_color = 0;
-        int res_pointer_color = 0;
-        int res_pointer_size = 0;
-        int res_max = 0;
-        int res_halo_color = 0;
-        int res_text_color = 0;
-        int res_text_size = 0;
-        int res_show_text = 0;
-        int res_init_position = 0;
-        
-        try {
-          //res_a = TiRHelper.getResource("stylable.CircularSlider");
-        	res_start_angle = TiRHelper.getResource("stylable.CircularSlider_start_angle");
-        	res_end_angle = TiRHelper.getResource("stylable.CircularSlider_end_angle");
-        	res_wheel_size = TiRHelper.getResource("stylable.CircularSlider_wheel_size");
-        	res_wheel_active_color = TiRHelper.getResource("stylable.CircularSlider_wheel_active_color");
-        	res_wheel_unactive_color = TiRHelper.getResource("stylable.CircularSlider_wheel_unactive_color");
-        	res_pointer_color = TiRHelper.getResource("stylable.CircularSlider_pointer_color");
-        	res_pointer_size = TiRHelper.getResource("stylable.CircularSlider_pointer_size");
-        	res_max = TiRHelper.getResource("stylable.CircularSlider_max");
-        	res_halo_color = TiRHelper.getResource("stylable.CircularSlider_halo_color)");
-        	res_text_color = TiRHelper.getResource("stylable.CircularSlider_text_color)");
-        	res_text_size = TiRHelper.getResource("stylable.CircularSlider_text_size)");
-        	res_show_text = TiRHelper.getResource("stylable.CircularSlider_show_text)");
-        	res_init_position = TiRHelper.getResource("stylable.CircularSlider_init_position)");
-        	
-		} catch (ResourceNotFoundException e) {
-			Log.e(TAG, "XML resources could not be found!!!");
-		}
-        
-        
-		mColorWheelStrokeWidth = a.getInteger(
-				res_wheel_size, COLOR_WHEEL_STROKE_WIDTH_DEF_VALUE);
-		mPointerRadius = a.getDimension(
-				res_pointer_size, POINTER_RADIUS_DEF_VALUE);
-		max = a.getInteger(res_max, MAX_POINT_DEF_VALUE);
-
-		String wheel_color_attr = a
-				.getString(res_wheel_active_color);
-		String wheel_unactive_color_attr = a
-				.getString(res_wheel_unactive_color);
-		String pointer_color_attr = a
-				.getString(res_pointer_color);
-		String pointer_halo_color_attr = a
-				.getString(res_halo_color);
-
-		String text_color_attr = a.getString(res_text_color);
-
-		text_size = a.getDimensionPixelSize(res_text_size, TEXT_SIZE_DEFAULT_VALUE);
-
-		init_position = a.getInteger(res_init_position, 0);
-
-		start_arc = a.getInteger(res_start_angle, START_ANGLE_DEF_VALUE);
-		end_wheel = a.getInteger(res_end_angle, END_WHEEL_DEFAULT_VALUE);
-
-		show_text = a.getBoolean(res_show_text, false);
-
+	private void initAttributes() {
+		
+		// setting everything to default values
+		// processProperties will override those properties if passed throu proxy
+		
+		mColorWheelStrokeWidth = COLOR_WHEEL_STROKE_WIDTH_DEF_VALUE;
+		mPointerRadius = POINTER_RADIUS_DEF_VALUE;
+		max = MAX_POINT_DEF_VALUE;
+		text_size = TEXT_SIZE_DEFAULT_VALUE;
+		init_position = 0;
+		start_arc = START_ANGLE_DEF_VALUE;
+		end_wheel = END_WHEEL_DEFAULT_VALUE;
+		show_text = false;
 		last_radians = end_wheel;
 
 		if (init_position < start_arc)
 			init_position = calculateTextFromStartAngle(start_arc);
 
-		// mAngle = (float) calculateAngleFromText(init_position);
-
-		if (wheel_color_attr != null) {
-			try {
-				wheel_color = Color.parseColor(wheel_color_attr);
-			} catch (IllegalArgumentException e) {
-				wheel_color = Color.DKGRAY;
-			}
-
-		} else {
-			wheel_color = Color.DKGRAY;
-		}
-		if (wheel_unactive_color_attr != null) {
-			try {
-				unactive_wheel_color = Color
-						.parseColor(wheel_unactive_color_attr);
-			} catch (IllegalArgumentException e) {
-				unactive_wheel_color = Color.CYAN;
-			}
-
-		} else {
-			unactive_wheel_color = Color.CYAN;
-		}
-
-		if (pointer_color_attr != null) {
-			try {
-				pointer_color = Color.parseColor(pointer_color_attr);
-			} catch (IllegalArgumentException e) {
-				pointer_color = Color.CYAN;
-			}
-
-		} else {
-			pointer_color = Color.CYAN;
-		}
-
-		if (pointer_halo_color_attr != null) {
-			try {
-				pointer_halo_color = Color.parseColor(pointer_halo_color_attr);
-			} catch (IllegalArgumentException e) {
-				pointer_halo_color = Color.CYAN;
-			}
-
-		} else {
-			pointer_halo_color = Color.DKGRAY;
-		}
-
-		if (text_color_attr != null) {
-			try {
-				text_color = Color.parseColor(text_color_attr);
-			} catch (IllegalArgumentException e) {
-				text_color = Color.CYAN;
-			}
-		} else {
-			text_color = Color.CYAN;
-		}
+		wheel_color = Color.DKGRAY;
+		unactive_wheel_color = Color.CYAN;
+		pointer_color = Color.CYAN;
+		pointer_halo_color = Color.DKGRAY;
+		text_color = Color.CYAN;
 
 	}
 
@@ -502,8 +384,8 @@ public class HoloCircleSeekBar extends View {
 	}
 	
 	public void setPointerRadius(int w){
-		mPointerHaloPaint.setStrokeWidth(w);
-		mPointerColor.setStrokeWidth(w);
+		mPointerRadius = w;
+		invalidate();
 	}
 	
 	public void setBarWidth(int w){
@@ -511,126 +393,82 @@ public class HoloCircleSeekBar extends View {
 		mColorWheelPaint.setStrokeWidth(w);
 	}
 
-    public void setValue(float newValue) {
-        if (newValue < max) {
-            float newAngle = (float) (360.0 * (newValue / max));
-            arc_finish_radians = (int) calculateAngleFromRadians(calculateRadiansFromAngle(newAngle)) + 1;
-			mAngle = calculateAngleFromRadians(arc_finish_radians);
-			setText(String.valueOf(calculateTextFromAngle(arc_finish_radians)));
-			updatePointerPosition();
-			invalidate();
-        }
-    }
+  public void setValue(float newValue) {
+      if (newValue < max) {
+          float newAngle = (float) (360.0 * (newValue / max));
+          arc_finish_radians = (int) calculateAngleFromRadians(calculateRadiansFromAngle(newAngle)) + 1;
+		mAngle = calculateAngleFromRadians(arc_finish_radians);
+		setText(String.valueOf(calculateTextFromAngle(arc_finish_radians)));
+		updatePointerPosition();
+		invalidate();
+      }
+  }
 
 	private void updatePointerPosition() {
 		pointerPosition = calculatePointerPosition(mAngle);
 	}
 
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		// Convert coordinates to our internal coordinate system
-		float x = event.getX() - mTranslationOffset;
-		float y = event.getY() - mTranslationOffset;
+		public boolean onTouchEvent(MotionEvent event) {
+			// Convert coordinates to our internal coordinate system
+			float x = event.getX() - mTranslationOffset;
+			float y = event.getY() - mTranslationOffset;
 
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			// Check whether the user pressed on (or near) the pointer
-			mAngle = (float) Math.atan2(y, x);
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				// Check whether the user pressed on (or near) the pointer
+				mAngle = (float) Math.atan2(y, x);
 
-			block_end = false;
-			block_start = false;
-			mUserIsMovingPointer = true;
+				mUserIsMovingPointer = true;
 
-			arc_finish_radians = calculateRadiansFromAngle(mAngle);
+				arc_finish_radians = calculateRadiansFromAngle(mAngle);
 
-			if (arc_finish_radians > end_wheel) {
-				arc_finish_radians = end_wheel;
-				block_end = true;
-			}
+				if (arc_finish_radians > end_wheel) {
+					arc_finish_radians = end_wheel;
+				}
 
-			if (!block_end) {
 				setText(String.valueOf(calculateTextFromAngle(arc_finish_radians)));
 				updatePointerPosition();
 				invalidate();
-			}
-            if (mOnCircleSeekBarChangeListener != null) {
-                mOnCircleSeekBarChangeListener.onStartTrackingTouch(this);
-            }
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (mUserIsMovingPointer) {
-				mAngle = (float) Math.atan2(y, x);
+        
+				if (mOnCircleSeekBarChangeListener != null) {
+            mOnCircleSeekBarChangeListener.onStartTrackingTouch(this);
+        }
+				break;
+			case MotionEvent.ACTION_MOVE:
+				if (mUserIsMovingPointer) {
+					mAngle = (float) Math.atan2(y, x);
 
-				int radians = calculateRadiansFromAngle(mAngle);
+					int radians = calculateRadiansFromAngle(mAngle);
 
-				if (last_radians > radians && radians < (360 / 6) && x > lastX
-						&& last_radians > (360 / 6)) {
-
-					if (!block_end && !block_start)
-						block_end = true;
-					// if (block_start)
-					// block_start = false;
-				} else if (last_radians >= start_arc
-						&& last_radians <= (360 / 4) && radians <= (360 - 1)
-						&& radians >= ((360 / 4) * 3) && x < lastX) {
-					if (!block_start && !block_end)
-						block_start = true;
-					// if (block_end)
-					// block_end = false;
-
-				} else if (radians >= end_wheel && !block_start
-						&& last_radians < radians) {
-					block_end = true;
-				} else if (radians < end_wheel && block_end
-						&& last_radians > end_wheel) {
-					block_end = false;
-				} else if (radians < start_arc && last_radians > radians
-						&& !block_end) {
-					block_start = true;
-				} else if (block_start && last_radians < radians
-						&& radians > start_arc && radians < end_wheel) {
-					block_start = false;
-				}
-
-				if (block_end) {
-					arc_finish_radians = end_wheel - 1;
-					setText(String.valueOf(max));
-					mAngle = calculateAngleFromRadians(arc_finish_radians);
-					updatePointerPosition();
-				} else if (block_start) {
-					arc_finish_radians = start_arc;
-					mAngle = calculateAngleFromRadians(arc_finish_radians);
-					setText(String.valueOf(0));
-					updatePointerPosition();
-				} else {
 					arc_finish_radians = calculateRadiansFromAngle(mAngle);
 					setText(String.valueOf(calculateTextFromAngle(arc_finish_radians)));
 					updatePointerPosition();
+					invalidate();
+					
+					if (mOnCircleSeekBarChangeListener != null)
+						mOnCircleSeekBarChangeListener.onProgressChanged(this,
+								Integer.parseInt(text), true);
+
+					last_radians = radians;
+
 				}
-				invalidate();
-				if (mOnCircleSeekBarChangeListener != null)
-					mOnCircleSeekBarChangeListener.onProgressChanged(this,
-							Integer.parseInt(text), true);
-
-				last_radians = radians;
-
+				break;
+			case MotionEvent.ACTION_UP:
+				mUserIsMovingPointer = false;
+	            if (mOnCircleSeekBarChangeListener != null) {
+	                mOnCircleSeekBarChangeListener.onStopTrackingTouch(this);
+	            }
+				break;
 			}
-			break;
-		case MotionEvent.ACTION_UP:
-			mUserIsMovingPointer = false;
-            if (mOnCircleSeekBarChangeListener != null) {
-                mOnCircleSeekBarChangeListener.onStopTrackingTouch(this);
-            }
-			break;
-		}
-		// Fix scrolling
-		if (event.getAction() == MotionEvent.ACTION_MOVE && getParent() != null) {
-			getParent().requestDisallowInterceptTouchEvent(true);
-		}
-		lastX = x;
+			// Fix scrolling
+			if (event.getAction() == MotionEvent.ACTION_MOVE && getParent() != null) {
+				getParent().requestDisallowInterceptTouchEvent(true);
+			}
+			lastX = x;
 
-		return true;
-	}
+			return true;
+		}
 
 	/**
 	 * Calculate the pointer's coordinates on the color wheel using the supplied

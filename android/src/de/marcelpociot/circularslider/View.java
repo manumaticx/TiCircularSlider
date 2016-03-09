@@ -29,9 +29,10 @@ public class View extends TiUIView {
 	private static final String PROPERTY_LINE_WIDTH = "lineWidth";
 	private static final String PROPERTY_COLOR_FILLED = "filledColor";
 	private static final String PROPERTY_COLOR_UNFILLED = "unfilledColor";
+	private static final String PROPERTY_COLOR_HANDLE = "handleColor";
 	private static final String PROPERTY_POINTER_COLOR = "pointerColor";
+	private static final String PROPERTY_POINTER_BORDER_COLOR = "pointerBoderColor";
 	private static final String PROPERTY_POINTER_RADIUS = "pointerWidth";
-	private static final String PROPERTY_POINTER_HALO_COLOR = "pointerHaloColor";
 	
 	public View(TiViewProxy proxy) {
 		super(proxy);
@@ -39,17 +40,15 @@ public class View extends TiUIView {
 		HoloCircleSeekBar hcsb = new HoloCircleSeekBar(proxy.getActivity());
 
 		hcsb.setOnSeekBarChangeListener(new OnCircleSeekBarChangeListener() {
+				@Override
+        public void onProgressChanged(HoloCircleSeekBar view, int newProgress, boolean fromUser){
+					Log.d(LCAT,"Progress:" + view.getValue());
+					notifyOfChange(view.getValue());
+				}
 
-			@Override
-			
-	        public void onProgressChanged(HoloCircleSeekBar view, int newProgress, boolean fromUser){
-				Log.d(LCAT,"Progress:" + view.getValue());
-				notifyOfChange(view.getValue());
-			}
+        public void onStartTrackingTouch(HoloCircleSeekBar view){}
 
-	        public void onStartTrackingTouch(HoloCircleSeekBar view){}
-
-	        public void onStopTrackingTouch(HoloCircleSeekBar view){}
+        public void onStopTrackingTouch(HoloCircleSeekBar view){}
 		 });
 
 		setNativeView(hcsb);
@@ -72,7 +71,7 @@ public class View extends TiUIView {
 		}
 
 		if (props.containsKey(PROPERTY_VALUE)) {
-			hcsb.setValue(TiConvert.toInt(props.get(PROPERTY_VALUE)));
+			hcsb.setValue(TiConvert.toFloat(props.get(PROPERTY_VALUE)));
 		}
 
 		if (props.containsKey(PROPERTY_LINE_WIDTH)) {
@@ -92,8 +91,8 @@ public class View extends TiUIView {
 			hcsb.setPointerColor(TiConvert.toColor(props.getString(PROPERTY_POINTER_COLOR)));
 		}
 		
-		if (props.containsKey(PROPERTY_POINTER_HALO_COLOR)) {
-			hcsb.setPointerHaloColor(TiConvert.toColor(props.getString(PROPERTY_POINTER_HALO_COLOR)));
+		if (props.containsKey(PROPERTY_POINTER_BORDER_COLOR)) {
+			hcsb.setPointerHaloColor(TiConvert.toColor(props.getString(PROPERTY_POINTER_BORDER_COLOR)));
 		}
 		
 		if (props.containsKey(PROPERTY_POINTER_RADIUS)) {
